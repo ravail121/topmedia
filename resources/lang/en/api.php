@@ -25,12 +25,14 @@ return [
     "err_invalid_comment_id" => "Invalid Comment id",
     "err_invalid_comment_reply_id" => "Invalid comment reply id",
     "crypto_address_non_unique" => "This crypto address already in use",
+    "err_something_went_wrong" => "Something went wrong",
     "invalid_crypto_address" => "Please enter valid crypto address.",
 
     //    success
     'succ' => 'success',
     'suc_user_register' => 'register successfully',
     'suc_user_login' => 'login successfully',
+    'suc_token_generation' => 'Agora token generated successfully',
     'suc_notification_updated' => 'notification Setting updated',
     'succ_profile_update' => 'Profile updated successfully',
     'succ_logout' => 'user logout successfully',
@@ -61,6 +63,7 @@ return [
     "succ_post_hided" => "Post hide successfully",
     "succ_follower_removed" => "Follower removed successfully",
     "succ_notifications_removed" => "All notification removed successfully",
+    "succ_notifications_sent" => "Notifications Sent successfully",
     "suc_user_crypto_save" => "Crypto address updated successfully",
     'err_crypto_add' => 'Please add crypt address',
     //    Version

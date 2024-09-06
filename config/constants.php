@@ -2,7 +2,7 @@
 
 return [
     'empty_object' => new stdClass(),
-    'google_map_key' => 'AIzaSyBRR40Ie35qkoC1F5-v3YsZ1eWt51F3Qqg',
+    'google_map_key' => '',
     'asset_url' => env('APP_URL'),
     'upload_type' => 'local',
     'default' => [
@@ -18,5 +18,11 @@ return [
         'user_audio_file' => 'uploads/user/audio'
     ],
     'push_log' => true,
-    'firebase_server_key' => 'AAAAoaCu6q8:APA91bG1C2lzjruLaEPejwaX0YWN_1TgQ1cIfO9BQDPSsS1HAZMVDCtarqRHuKfPWrOaDKjQ24vx9ez2-yh35FykQ1sxfO0UlTepDXwMzOTUGC5Ucr4sEYrA3Pbq_DaWk7XY3yB2nyY2',
+    'firebase_server_key' => '',
+    
+    // Agora settings
+    'agora' => [
+        'app_id' => env('AGORA_APP_ID'),
+        'app_certificate' => env('AGORA_APP_CERTIFICATE'),
+    ],
 ];

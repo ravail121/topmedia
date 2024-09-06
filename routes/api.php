@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::group(['namespace' => 'Api\V1', 'prefix' => 'V1'], function () {
-
     Route::get('content/{type}', 'GuestController@content');
     Route::post('login', 'GuestController@login');
     Route::post('signup', 'GuestController@signup');
@@ -44,6 +43,9 @@ Route::group(['namespace' => 'Api\V1', 'prefix' => 'V1'], function () {
             Route::post("notification", "UserController@GetNotificationList");
 
             Route::get("notification/remove_all", "UserController@removeAllNotifications");
+            Route::post('send_notifications_to_all_users', 'FcmController@sendNotificationToAllUsers');
+
+            Route::post('agora_token_generator', 'TokenGeneratorAgora@generateToken');
 
             Route::post('search_user', 'UserController@searchUsers');
         });
