@@ -8,25 +8,37 @@ use App\Http\Controllers\Api\ResponseController;
 use Illuminate\Support\Facades\Auth;
 use App\DeviceToken;
 use Exception;
+use App\User;
 
 class FcmController extends ResponseController
 {
     public function sendNotificationToAllUsers(Request $request)
     {
+        $this->directValidation([
+            'channel_name' => ['required', 'max:100']
+        ]);
         $userId = Auth::id(); // Get the logged-in user's ID
 
         try {
             // Get the access token for FCM
             $token = $this->getAccessToken();
 
-            // Retrieve device tokens excluding the logged-in user's tokens
-            $deviceTokens = DeviceToken::where('user_id', '!=', $userId)
+            // Retrieve the IDs of the logged-in user's followers
+            $followerIds = User::join("followers", "followers.profile_id", "=", "users.id")
+            ->where("followers.user_id", $userId)
+            ->pluck("followers.profile_id");
+            if (empty($followerIds)) {
+                $this->sendError(__('api.err_no_followers'));
+            }
+
+            // Retrieve device tokens for the followers, excluding tokens of the logged-in user
+            $deviceTokens = DeviceToken::whereIn('user_id', $followerIds)
                 ->pluck('token')
                 ->toArray();
 
             // Check if there are device tokens to notify
             if (empty($deviceTokens)) {
-                return response()->json(['message' => 'No devices to notify.'], 200);
+                $this->sendError(__('api.no_devices'));
             }
 
             $responses = [];
@@ -35,8 +47,11 @@ class FcmController extends ResponseController
                     "message" => [
                         "token" => $deviceToken, // Single device token
                         "notification" => [
-                            "body" => "This is an FCM notification message!",
-                            "title" => "FCM Message",
+                            "body" => Auth::user()->name." is going live",
+                            "title" => "LIVE!!!",
+                        ],
+                        "data"=>[
+                            "channel_name" => $request->channel_name
                         ]
                     ]
                 ];
@@ -48,7 +63,7 @@ class FcmController extends ResponseController
             $this->sendResponse(200, __('api.succ_notifications_sent'));
 
         } catch (Exception $e) {
-            $this->sendError(__('api.err_something_went_wrong'));
+            $this->sendError($e->getMessage());
         }
     }
 

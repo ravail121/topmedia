@@ -20,6 +20,8 @@ return [
     'err_space_not_allowed' => 'space is not allowed inside username',
     'errr_fail_to_upload_image' => 'Fail to upload image',
     'err_enter_valid_old_pass' => 'Invalid current password',
+    'err_no_followers' => 'No followers to notify',
+    'err_no_devices' => 'No devices to notify',
     "err_enter_invalid_user_id" => "Invalid user id",
     "err_invalid_post_id" => "Invalid Post id",
     "err_invalid_comment_id" => "Invalid Comment id",
