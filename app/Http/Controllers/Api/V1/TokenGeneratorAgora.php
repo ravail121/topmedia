@@ -14,7 +14,8 @@ class TokenGeneratorAgora extends ResponseController
     {
         $this->directValidation([
             'channel_name' => ['required', 'max:100'],
-            'uid' => ['required', 'max:100']
+            'uid' => ['required', 'max:100'],
+            'type' => ['required']
         ]);
 
         try {
@@ -36,7 +37,7 @@ class TokenGeneratorAgora extends ResponseController
                 $appCertificate,
                 $channelName,
                 $uid,
-                RtcTokenBuilder2::ROLE_PUBLISHER,
+                $request->type === 'broadcaster' ? RtcTokenBuilder2::ROLE_PUBLISHER : RtcTokenBuilder2::ROLE_SUBSCRIBER,
                 $tokenExpirationInSeconds,
                 $privilegeExpirationInSeconds
             );

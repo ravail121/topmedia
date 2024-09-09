@@ -22,14 +22,6 @@ class FcmController extends ResponseController
 
         try {
             // Get the access token for FCM
-            // Retrieve the Agora token using channel_name and userId as uid
-            $agoraToken = AgoraToken::where('channel_name', $request->channel_name)
-            ->where('uid', $userId)
-            ->first();
-        
-            if (!$agoraToken) {
-                $this->sendError(__('api.agora_token_not_found'));
-            }
             $token = $this->getAccessToken();
 
             // Retrieve the IDs of the logged-in user's followers
@@ -60,9 +52,7 @@ class FcmController extends ResponseController
                             "title" => "LIVE!!!",
                         ],
                         "data"=>[
-                            "channel_name" => $request->channel_name,
-                            "uid" => $agoraToken->uid,
-                            "agora_token" => $agoraToken->agora_token
+                            "channel_name" => $request->channel_name
                         ]
                     ]
                 ];
