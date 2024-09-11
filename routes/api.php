@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['namespace' => 'Api\V1', 'prefix' => 'V1'], function () {
     Route::get('content/{type}', 'GuestController@content');
     Route::post('login', 'GuestController@login');
+    Route::post('testingNotifications', 'GuestController@testingNoti');
     Route::post('signup', 'GuestController@signup');
     Route::post('check_ability', 'GuestController@check_ability');
     Route::post('forgot_password', 'GuestController@forgot_password');

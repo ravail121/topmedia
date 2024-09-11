@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\ResponseController;
 use App\User;
 use App\DeviceToken;
 use App\SocialAccount;
+use Exception;
+use Google\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -32,6 +34,70 @@ class GuestController extends ResponseController
         } else {
             $this->sendError(__('api.err_fail_to_auth'), false);
         }
+    }
+
+    public function testingNoti(Request $request){
+
+        $token = $this->getAccessToken();
+        $headers = [
+            'Authorization: Bearer ' . $token,
+            'Content-Type: application/json',
+        ];
+
+        $notificationData = [
+            "message" => [
+                "token" => $request->fcm, // Single device token
+                "notification" => [
+                    "body" => "Rizwan is going live",
+                    "title" => "LIVE!!!",
+                ],
+                "data"=>[
+                    "channel_name" => $request->channel_name
+                ]
+            ]
+        ];
+    
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/nextgen-1665319772916/messages:send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($notificationData));
+    
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // Get HTTP response status code
+    
+        if (curl_errno($ch)) {
+            $errorMsg = curl_error($ch);
+            curl_close($ch);
+            throw new \Exception("cURL error: $errorMsg");
+        }
+    
+        curl_close($ch);
+    
+        // Check for HTTP status code errors
+        if ($httpCode >= 400) {
+            $responseData = json_decode($response, true);
+            $errorMsg = isset($responseData['error']['message']) ? $responseData['error']['message'] : 'Unknown error';
+            throw new \Exception("HTTP error $httpCode: $errorMsg");
+        }
+    
+        return $response;
+    }
+
+    private function getAccessToken()
+    {
+        $client = new Client();
+        $client->setAuthConfig(base_path('firebase.json'));
+        $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+        $client->useApplicationDefaultCredentials();
+        $token = $client->fetchAccessTokenWithAssertion();
+        
+        if (isset($token['access_token'])) {
+            return $token['access_token'];
+        }
+
+        throw new Exception('Unable to fetch access token.');
     }
 
 
