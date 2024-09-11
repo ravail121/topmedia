@@ -29,7 +29,7 @@ class FcmController extends ResponseController
             ->where("followers.user_id", $userId)
             ->pluck("followers.profile_id");
             if (empty($followerIds)) {
-                $this->sendError(__('api.err_no_followers'));
+                $this->sendError(__('api.err_no_followers'),false);
             }
 
             // Retrieve device tokens for the followers, excluding tokens of the logged-in user
@@ -39,7 +39,7 @@ class FcmController extends ResponseController
 
             // Check if there are device tokens to notify
             if (empty($deviceTokens)) {
-                $this->sendError(__('api.no_devices'));
+                $this->sendError(__('api.err_no_devices'), false);
             }
 
             $responses = [];
