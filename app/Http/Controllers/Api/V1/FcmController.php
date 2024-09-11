@@ -34,7 +34,7 @@ class FcmController extends ResponseController
 
             // Retrieve device tokens for the followers, excluding tokens of the logged-in user
             $deviceTokens = DeviceToken::whereIn('user_id', $followerIds)
-                ->pluck('token')
+                ->pluck('push_token')
                 ->toArray();
 
             // Check if there are device tokens to notify
@@ -76,7 +76,7 @@ class FcmController extends ResponseController
         ];
     
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/topmedia-3dcbe/messages:send');
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/nextgen-1665319772916/messages:send');
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
