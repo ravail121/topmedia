@@ -26,8 +26,8 @@ class FcmController extends ResponseController
 
             // Retrieve the IDs of the logged-in user's followers
             $followerIds = User::join("followers", "followers.profile_id", "=", "users.id")
-            ->where("followers.user_id", $userId)
-            ->pluck("followers.profile_id");
+            ->where("followers.profile_id", $userId)
+            ->pluck("followers.user_id");
             if (empty($followerIds)) {
                 $this->sendError(__('api.err_no_followers'),false);
             }
