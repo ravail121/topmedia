@@ -28,6 +28,7 @@ class FcmController extends ResponseController
             $followerIds = User::join("followers", "followers.profile_id", "=", "users.id")
             ->where("followers.profile_id", $userId)
             ->pluck("followers.user_id");
+            dd($followerIds);
             if (empty($followerIds)) {
                 $this->sendError(__('api.err_no_followers'),false);
             }
@@ -60,6 +61,10 @@ class FcmController extends ResponseController
                 $response = $this->sendNotification($token, $notificationData);
                 $responses[$deviceToken] = $response; // Store response by device token
             }
+
+            $user = User::find(Auth::id());
+            $user->is_live = 1;
+            $user->save();
 
             $this->sendResponse(200, __('api.succ_notifications_sent'));
 

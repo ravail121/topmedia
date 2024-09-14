@@ -32,6 +32,8 @@ Route::group(['namespace' => 'Api\V1', 'prefix' => 'V1'], function () {
 
             Route::post('follower', 'UserController@GetFollowers');
             Route::post('following', 'UserController@GetFollowing');
+            Route::get('following/live', 'UserController@GetLiveFollowing');
+            Route::get('live_status/off', 'UserController@SetLiveStatusOff');
 
             Route::post("help_request", "UserController@SubmitHelpRequest");
             Route::post("home", "UserController@Home");

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\AgoraToken;
 use App\Followers;
 use App\Http\Controllers\WebController;
 use App\Posts;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -284,4 +286,57 @@ class UsersController extends WebController
         }
         return $return_data;
     }
+
+    public function GetLiveFollowing(Request $request)
+    {
+        $authUserId = Auth::id(); // Get the authenticated user's ID
+
+        // Query to get the list of users who are live and being followed by the authenticated user
+        $followingLiveUsers = Followers::select('users.id', 'users.name', 'users.profile_image')
+            ->join('users', 'users.id', '=', 'followers.profile_id')
+            ->where('followers.user_id', $authUserId) // Who I am following
+            ->where('users.is_live', 1) // Only those users who are live
+            ->get();
+
+        // Prepare response data
+        $data = [];
+        foreach ($followingLiveUsers as $user) {
+            $data[] = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'profile_image' => get_fancy_box_html(get_asset($user->profile_image)), // Assuming this function exists
+            ];
+        }
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'List of live users you are following',
+            'data' => $data
+        ]);
+    }
+
+    public function SetLiveStatusOff(Request $request)
+    {
+        $user = User::find(Auth::id());
+        $user->is_live = 0;
+        $user->save();
+
+            // Find and delete entries from AgoraToken where uid matches the user ID
+        $agoraTokens = AgoraToken::where('uid', $user->id)->get();
+
+        foreach ($agoraTokens as $token) {
+            // Delete any entries that have the same channel_name
+            AgoraToken::where('channel_name', $token->channel_name)->delete();
+
+            // Delete the current token entry
+            $token->delete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Live status updated to offline',
+        ], 200);
+    }
+
+
 }
