@@ -28,7 +28,6 @@ class FcmController extends ResponseController
             $followerIds = User::join("followers", "followers.profile_id", "=", "users.id")
             ->where("followers.profile_id", $userId)
             ->pluck("followers.user_id");
-            dd($followerIds);
             if (empty($followerIds)) {
                 $this->sendError(__('api.err_no_followers'),false);
             }
