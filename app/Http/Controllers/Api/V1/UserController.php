@@ -506,9 +506,23 @@ class UserController extends ResponseController
 
         // Check if the user exists
         if ($user) {
+             // Initialize the response data
             $data = [
-                "live_status" => $user->is_live == 1 ? true : false
+                "live_status" => $user->is_live == 1 ? true : false,
+                "channel_name" => null, // Default channel name as null
             ];
+
+            // If the user is live, fetch the latest AgoraToken record for that user
+            if ($user->is_live == 1) {
+                $agoraToken = AgoraToken::where('uid', $user->id)
+                                ->orderBy('created_at', 'desc') // Get the latest record first
+                                ->first();
+
+                // If an AgoraToken exists, include the channel_name in the response
+                if ($agoraToken) {
+                    $data['channel_name'] = $agoraToken->channel_name;
+                }
+            }
             $this->sendResponse(200, __("api.succ"), $data);
         }
     }
