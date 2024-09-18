@@ -506,7 +506,10 @@ class UserController extends ResponseController
 
         // Check if the user exists
         if ($user) {
-            $this->sendResponse(200, __("api.succ"), $user->is_live == 1 ? true : false);
+            $data = [
+                "live_status" => $user->is_live == 1 ? true : false
+            ];
+            $this->sendResponse(200, __("api.succ"), $data);
         }
     }
 }
