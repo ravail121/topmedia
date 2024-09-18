@@ -315,28 +315,4 @@ class UsersController extends WebController
         ]);
     }
 
-    public function SetLiveStatusOff(Request $request)
-    {
-        $user = User::find(Auth::id());
-        $user->is_live = 0;
-        $user->save();
-
-            // Find and delete entries from AgoraToken where uid matches the user ID
-        $agoraTokens = AgoraToken::where('uid', $user->id)->get();
-
-        foreach ($agoraTokens as $token) {
-            // Delete any entries that have the same channel_name
-            AgoraToken::where('channel_name', $token->channel_name)->delete();
-
-            // Delete the current token entry
-            $token->delete();
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Live status updated to offline',
-        ], 200);
-    }
-
-
 }
