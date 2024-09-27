@@ -52,7 +52,9 @@ class FcmController extends ResponseController
                             "title" => "LIVE!!!",
                         ],
                         "data"=>[
-                            "channel_name" => $request->channel_name
+                            "channel_name" => $request->channel_name,
+                            "broadcaster_name" => Auth::user()->name,
+                            "profile_pic_url" => Auth::user()->profile_image
                         ]
                     ]
                 ];
