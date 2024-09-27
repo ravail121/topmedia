@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\AgoraToken;
 use App\BlockedUser;
 use App\DeviceToken;
 use App\Events\Api\GamificationEvent;
@@ -471,5 +472,58 @@ class UserController extends ResponseController
 
 
         $this->sendResponse(200, __("api.succ"));
+    }
+
+    public function SetLiveStatusOff(Request $request)
+    {
+        $user = User::find(Auth::id());
+        $user->is_live = 0;
+        $user->save();
+
+            // Find and delete entries from AgoraToken where uid matches the user ID
+        $agoraTokens = AgoraToken::where('uid', $user->id)->get();
+
+        foreach ($agoraTokens as $token) {
+            // Delete any entries that have the same channel_name
+            AgoraToken::where('channel_name', $token->channel_name)->delete();
+
+            // Delete the current token entry
+            $token->delete();
+        }
+
+        $this->sendResponse(200, __("api.succ"));
+    }
+
+    public function GetLiveStatus(Request $request)
+    {
+        // Validate the request to ensure 'user_id' is provided
+        $request->validate([
+            'user_id' => 'required',
+        ]);
+
+        // Find the user by the provided user_id
+        $user = User::find($request->user_id);
+
+        // Check if the user exists
+        if ($user) {
+             // Initialize the response data
+            $data = [
+                "live_status" => $user->is_live == 1 ? true : false,
+                "channel_name" => null, // Default channel name as null
+            ];
+
+            // If the user is live, fetch the latest AgoraToken record for that user
+            if ($user->is_live == 1) {
+                $agoraToken = AgoraToken::where('uid', $user->id)
+                                ->orderBy('created_at', 'desc') // Get the latest record first
+                                ->first();
+
+                // If an AgoraToken exists, include the channel_name in the response
+                if ($agoraToken) {
+                    $data['channel_name'] = $agoraToken->channel_name;
+                }
+            }
+            $this->sendResponse(200, __("api.succ"), $data);
+        }
     }
 }
