@@ -74,6 +74,53 @@ class FcmController extends ResponseController
         }
     }
 
+    public function sendNotificationToSelectedUsers(Request $request)
+    {
+        $this->directValidation([
+            'channel_name' => ['required', 'max:100'],
+            'user_ids' => ['required']
+        ]);
+
+        try {
+            // Get the access token for FCM
+            $token = $this->getAccessToken();
+
+            // Retrieve device tokens for the followers, excluding tokens of the logged-in user
+            $deviceTokens = DeviceToken::whereIn('user_id', $request->user_ids)
+                ->pluck('push_token')
+                ->toArray();
+
+            // Check if there are device tokens to notify
+            if (empty($deviceTokens)) {
+                $this->sendError(__('api.err_no_devices'), false);
+            }
+
+            $responses = [];
+            foreach ($deviceTokens as $deviceToken) {
+                $notificationData = [
+                    "message" => [
+                        "token" => $deviceToken, // Single device token
+                        "notification" => [
+                            "body" => Auth::user()->name." is going live",
+                            "title" => "LIVE!!!",
+                        ],
+                        "data"=>[
+                            "channel_name" => $request->channel_name,
+                            "broadcaster_name" => Auth::user()->name,
+                            "profile_pic_url" => Auth::user()->profile_image
+                        ]
+                    ]
+                ];
+
+                $response = $this->sendNotification($token, $notificationData);
+            }
+            $this->sendResponse(200, __('api.succ_notifications_sent'));
+
+        } catch (Exception $e) {
+            $this->sendError($e->getMessage());
+        }
+    }
+
     private function sendNotification($token, $notificationData)
     {
         $headers = [

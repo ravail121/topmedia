@@ -48,6 +48,7 @@ Route::group(['namespace' => 'Api\V1', 'prefix' => 'V1'], function () {
 
             Route::get("notification/remove_all", "UserController@removeAllNotifications");
             Route::post('send_notifications_to_all_users', 'FcmController@sendNotificationToAllUsers');
+            Route::post('send_notifications_to_selected_users', 'FcmController@sendNotificationToSelectedUsers');
 
             Route::post('agora_token_generator', 'TokenGeneratorAgora@generateToken');
 
