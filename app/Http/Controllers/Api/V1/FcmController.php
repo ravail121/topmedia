@@ -102,13 +102,12 @@ class FcmController extends ResponseController
                     "message" => [
                         "token" => $deviceToken, // Single device token
                         "notification" => [
-                            "body" => Auth::user()->name." is going live",
+                            "body" => Auth::user()->name." is inviting you to join his live stream!",
                             "title" => "LIVE!!!",
                         ],
                         "data"=>[
                             "channel_name" => $request->channel_name,
-                            "broadcaster_name" => Auth::user()->name,
-                            "profile_pic_url" => Auth::user()->profile_image
+                            "broadcaster_noti" => 1
                         ]
                     ]
                 ];
