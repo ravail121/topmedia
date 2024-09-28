@@ -94,9 +94,10 @@ class FcmController extends ResponseController
             if (empty($deviceTokens)) {
                 $this->sendError(__('api.err_no_devices'), false);
             }
-
+// dd($deviceTokens);
             $responses = [];
             foreach ($deviceTokens as $deviceToken) {
+                // dd($deviceToken);
                 $notificationData = [
                     "message" => [
                         "token" => $deviceToken, // Single device token
@@ -117,7 +118,7 @@ class FcmController extends ResponseController
             $this->sendResponse(200, __('api.succ_notifications_sent'));
 
         } catch (Exception $e) {
-            $this->sendError($e->getMessage());
+            $this->sendError($e->getLine());
         }
     }
 
@@ -148,9 +149,9 @@ class FcmController extends ResponseController
     
         // Check for HTTP status code errors
         if ($httpCode >= 400) {
-            $responseData = json_decode($response, true);
-            $errorMsg = isset($responseData['error']['message']) ? $responseData['error']['message'] : 'Unknown error';
-            throw new \Exception("HTTP error $httpCode: $errorMsg");
+            // $responseData = json_decode($response, true);
+            // $errorMsg = isset($responseData['error']['message']) ? $responseData['error']['message'] : 'Unknown error';
+            // throw new \Exception("HTTP error $httpCode: $errorMsg");
         }
     
         return $response;
