@@ -86,9 +86,7 @@ class FcmController extends ResponseController
             $token = $this->getAccessToken();
 
             // Retrieve device tokens for the followers, excluding tokens of the logged-in user
-            $deviceTokens = DeviceToken::whereIn('user_id', $request->user_ids)
-                ->pluck('push_token')
-                ->toArray();
+            $deviceTokens = DeviceToken::whereIn('user_id', $request->user_ids)->get();
 
             // Check if there are device tokens to notify
             if (empty($deviceTokens)) {
@@ -100,14 +98,15 @@ class FcmController extends ResponseController
                 // dd($deviceToken);
                 $notificationData = [
                     "message" => [
-                        "token" => $deviceToken, // Single device token
+                        "token" => $deviceToken->push_token, // Single device token
                         "notification" => [
                             "body" => Auth::user()->name." is inviting you to join his live stream!",
                             "title" => "LIVE!!!",
                         ],
                         "data"=>[
                             "channel_name" => $request->channel_name,
-                            "broadcaster_noti" => 1
+                            "broadcaster_noti" => 1,
+			    "uid" => $deviceToken->user_id
                         ]
                     ]
                 ];
