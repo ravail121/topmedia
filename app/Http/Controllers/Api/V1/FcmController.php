@@ -105,8 +105,8 @@ class FcmController extends ResponseController
                         ],
                         "data"=>[
                             "channel_name" => $request->channel_name,
-                            "broadcaster_noti" => 1,
-			    "uid" => $deviceToken->user_id
+                            "broadcaster_noti" => '1',
+			                "uid" => $deviceToken->user_id
                         ]
                     ]
                 ];
